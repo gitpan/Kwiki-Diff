@@ -1,50 +1,49 @@
 package Kwiki::Diff;
-use strict;
-use warnings;
-use Kwiki::Plugin '-Base', ':XXX';
-use Kwiki::Installer '-base';
+use Kwiki::Plugin -Base;
+use Kwiki::Installer -base;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 const class_title => 'Kwiki diffs';
-const class_id => 'diff';
-const cgi_class => 'Kwiki::Diff::CGI';
-const css_file => 'diff.css';
+const class_id    => 'diff';
+const cgi_class   => 'Kwiki::Diff::CGI';
+const css_file    => 'diff.css';
 
-sub register { 
+sub register {
     my $registry = shift;
-    $registry->add(action => 'diff');
-    $registry->add(toolbar => 'diff_button',
-                   template => 'diff_button.html',
-                   show_for => 'revisions',
-                   params_class => $self->class_id,
-                  );
-    $registry->add(toolbar => 'diff_controls',
-                   template => 'diff_controls.html',
-                   show_for => 'diff',
-                   params_class => $self->class_id,
-                  );
+    $registry->add( action => 'diff' );
+    $registry->add(
+        toolbar      => 'diff_button',
+        template     => 'diff_button.html',
+        show_for     => 'revisions',
+        params_class => $self->class_id,
+    );
+    $registry->add(
+        toolbar      => 'diff_controls',
+        template     => 'diff_controls.html',
+        show_for     => 'diff',
+        params_class => $self->class_id,
+    );
 }
 
 sub diff {
 
     # a lot of chunks here stolen from ingy's Kwiki::Revisions
-    $self->use_class('archive');
     my $page = $self->pages->current;
     $page->load;
     my $revision_id = $self->cgi->revision_id
-        or return $self->redirect($page->url);
+      or return $self->redirect( $page->url );
 
     my $revisions = $page->revision_numbers;
-    $revision_id = $revisions->[-$revision_id] if ($revision_id < 0);
-    my $archive = $self->hub->load_class('archive');
+    $revision_id = $revisions->[ -$revision_id ] if ( $revision_id < 0 );
+    my $archive = $self->hub->archive;
 
-    my $screen_title = $page->title
-        . " <small>(Diff of Revision $revision_id)</small>",
+    my $screen_title =
+      $page->title . " <small>(Diff of Revision $revision_id)</small>",
 
     # now the diff
     my $current = [ split /\n/, $page->content ];
-    my $this_revision = [ split /\n/, $archive->fetch($page, $revision_id) ];
+    my $this_revision = [ split /\n/, $archive->fetch( $page, $revision_id ) ];
     require Algorithm::Diff;
     my @diff = Algorithm::Diff::sdiff( $this_revision, $current );
 
@@ -56,18 +55,19 @@ sub diff {
         '-' => 'removed',
         'u' => 'unmodified',
         'c' => 'changed',
-    }->{ $_->[0] } for @diff;
+      }->{ $_->[0] }
+      for @diff;
 
     $self->render_screen(
-        revision_id => $revision_id,
+        revision_id  => $revision_id,
         screen_title => $screen_title,
-        diff => \@diff,
+        diff         => \@diff,
     );
 }
 
 sub toolbar_params {
     my $revision_id = $self->cgi->revision_id
-        or return $self->redirect($self->pages->current->url);
+      or return $self->redirect( $self->pages->current->url );
     return revision_id => $revision_id;
 }
 
@@ -76,7 +76,6 @@ use Kwiki::CGI '-base';
 cgi 'revision_id';
 
 package Kwiki::Diff;
-1;
 
 __DATA__
 
@@ -91,7 +90,19 @@ Kwiki::Diff - display differences between the current wiki page and older revisi
 
 =head1 DESCRIPTION
 
-TODO
+This module requires that you be using L<Kwiki::Revisions>. Please make sure L<Kwiki::Revisions> is in your F<plugins> file.
+
+This module adds a toolbar item, "Differences," when viewing past revisions of wiki pages. When clicked, the user is shown a colorful side-by-side comparison of that revision and the current revision.
+
+=head1 TODO
+
+=over 4
+
+=item * Alternate diff styles, such as showing *only* the lines that have changed at the top or inline with the text.
+
+=item * Faster access to the differences of the current page.
+
+=back
 
 =head1 AUTHORS
 
@@ -153,7 +164,7 @@ h1 small {
 
 __template/tt2/diff_button.html__
 <!-- BEGIN diff_button.html -->
-<a href="[% script_name %]?action=diff&page_id=[% page_id %]&revision_id=[% revision_id %]" accesskey="r" title="Differences">[% INCLUDE diff_button_icon.html %]</a>
+<a href="[% script_name %]?action=diff&page_name=[% page_uri %]&revision_id=[% revision_id %]" accesskey="r" title="Differences">[% INCLUDE diff_button_icon.html %]</a>
 <!-- END diff_button.html -->
 
 __template/tt2/diff_button_icon.html__
@@ -168,7 +179,7 @@ __icons/gnome/template/diff_button_icon.html__
 
 __template/tt2/diff_controls.html__
 <!-- BEGIN diff_controls.html -->
-<a href="[% script_name %]?action=revisions&page_id=[% page_id %]&revision_id=[% revision_id %]" accesskey="r" title="Revision [% revision_id %]">
+<a href="[% script_name %]?action=revisions&page_name=[% page_uri %]&revision_id=[% revision_id %]" accesskey="r" title="Revision [% revision_id %]">
 [%- INCLUDE revisions_button_icon.html -%]
 </a> | <a href="[% script_name %]?[% page_uri %]" accesskey="c" title="Current Revision">
 [%- INCLUDE revisions_controls_current_icon.html -%]

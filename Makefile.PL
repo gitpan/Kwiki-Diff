@@ -1,18 +1,19 @@
-use inc::Module::Install;
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
 
-name('Kwiki-Diff');
-abstract('display differences between the current wiki page and older revisions');
-author('Ian Langworth <langworth.com>');
-version_from('lib/Kwiki/Diff.pm');
-license('perl');
-
-requires(qw(
-    perl 5.6.1
-    Kwiki 0.32
-    Kwiki::Revisions 0.12
-    Algorithm::Diff
-));
-
-check_nmake();
-
-&WriteAll();
+WriteMakefile(
+    NAME                => 'Kwiki::Diff',
+    AUTHOR              => 'Ian Langworth <langworth.com>',
+    VERSION_FROM        => 'lib/Kwiki/Diff.pm',
+    ABSTRACT_FROM       => 'lib/Kwiki/Diff.pm',
+    PL_FILES            => {},
+    PREREQ_PM => {qw(
+        Test::More 0
+        Kwiki 0.34
+        Kwiki::Revisions 0.12
+        Algorithm::Diff 0
+    )},
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean               => { FILES => 'Kwiki-Diff-*' },
+);
