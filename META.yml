@@ -1,0 +1,15 @@
+name: Kwiki-Diff
+version: 0.01
+abstract: display differences between the current wiki page and older revisions
+author: Ian Langworth <langworth.com>
+license: perl
+distribution_type: module
+requires:
+  perl: 5.6.1
+  Kwiki: 0.32
+  Kwiki::Revisions: 0.12
+  Algorithm::Diff: 0
+no_index:
+  directory:
+    - inc
+generated_by: Module::Install version 0.35
