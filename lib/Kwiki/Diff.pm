@@ -1,8 +1,11 @@
 package Kwiki::Diff;
+use strict;
+use warnings;
+
 use Kwiki::Plugin -Base;
 use Kwiki::Installer -base;
 
-our $VERSION = "0.02";
+our $VERSION = '0.03';
 
 const class_title => 'Kwiki diffs';
 const class_id    => 'diff';
@@ -90,9 +93,12 @@ Kwiki::Diff - display differences between the current wiki page and older revisi
 
 =head1 DESCRIPTION
 
-This module requires that you be using L<Kwiki::Revisions>. Please make sure L<Kwiki::Revisions> is in your F<plugins> file.
+This module requires that you be using L<Kwiki::Revisions>. Please make sure
+L<Kwiki::Revisions> is in your F<plugins> file.
 
-This module adds a toolbar item, "Differences," when viewing past revisions of wiki pages. When clicked, the user is shown a colorful side-by-side comparison of that revision and the current revision.
+This module adds a toolbar item, "Differences," when viewing past revisions of
+wiki pages. When clicked, the user is shown a colorful side-by-side comparison
+of that revision and the current revision.
 
 =head1 TODO
 
